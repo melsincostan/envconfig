@@ -30,7 +30,7 @@ func parse[T any]() (*T, error) {
 		required := strings.ToLower(f_t.Tag.Get("binding")) == "required"
 
 		if !f_v.CanSet() {
-			return nil, fmt.Errorf("Field %s: not assignable", f_t.Name)
+			return nil, fmt.Errorf("field %s: not assignable", f_t.Name)
 		}
 
 		switch f_t.Type.Kind() {
@@ -41,7 +41,7 @@ func parse[T any]() (*T, error) {
 			}
 			f_v.SetString(res)
 		default:
-			return nil, fmt.Errorf("Field %s: unsupported type %s", f_t.Name, f_v.Kind())
+			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}
 	}
 	return ptr, nil
