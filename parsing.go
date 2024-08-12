@@ -40,6 +40,12 @@ func parse[T any]() (*T, error) {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetString(res)
+		case reflect.Int:
+			res, err := getInt(env_name, required)
+			if err != nil {
+				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+			}
+			f_v.SetInt(int64(res))
 		default:
 			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}
