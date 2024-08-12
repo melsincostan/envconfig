@@ -40,12 +40,12 @@ func parse[T any]() (*T, error) {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetString(res)
-		case reflect.Int:
+		case reflect.Int | reflect.Int8 | reflect.Int16 | reflect.Int32 | reflect.Int64:
 			res, err := getInt(env_name, required)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
-			f_v.SetInt(int64(res))
+			f_v.SetInt(res) // TODO; check if this truncates if assigning a number with higher bitsize to a field with smaller bitsize (for example in16-size number into int8)/
 		default:
 			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}

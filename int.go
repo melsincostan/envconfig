@@ -2,7 +2,7 @@ package envconfig
 
 import "strconv"
 
-func getInt(env_name string, required bool) (int, error) {
+func getInt(env_name string, required bool) (int64, error) {
 	raw, err := getString(env_name, true)
 	if err != nil {
 		if required {
@@ -12,7 +12,7 @@ func getInt(env_name string, required bool) (int, error) {
 		}
 	}
 
-	res, err := strconv.Atoi(raw)
+	res, err := strconv.ParseInt(raw, 10, 64)
 	if err != nil {
 		return 0, err
 	}
