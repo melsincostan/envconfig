@@ -15,7 +15,7 @@ func TestGetUint(t *testing.T) {
 	whitespace_value := "  \t\t\n\n\r\n\r\n"
 	trimmable_value := fmt.Sprintf("%s%s", whitespace_value, valid_value)
 	invalid_value := "aabb"
-	valid_negative_value := "-6"
+	invalid_negative_value := "-6"
 
 	cases := []struct {
 		Name        string
@@ -41,10 +41,10 @@ func TestGetUint(t *testing.T) {
 		{"EnvOK_ValBAD_optional", valid_env_name, invalid_value, false, 0, true},
 		{"EnvBAD_ValBAD_required", invalid_env_name, invalid_value, true, 0, true},
 		{"EnvBAD_ValBAD_optional", invalid_env_name, invalid_value, false, 0, false},
-		{"EnvOK_ValNEG_required", valid_env_name, valid_negative_value, true, 0, true},
-		{"EnvOK_ValNEG_optional", valid_env_name, valid_negative_value, false, 0, true},
-		{"EnvBAD_ValNEG_required", invalid_env_name, valid_negative_value, true, 0, true},
-		{"EnvBAD_ValNEG_optional", invalid_env_name, valid_negative_value, false, 0, false},
+		{"EnvOK_ValNEG_required", valid_env_name, invalid_negative_value, true, 0, true},
+		{"EnvOK_ValNEG_optional", valid_env_name, invalid_negative_value, false, 0, true},
+		{"EnvBAD_ValNEG_required", invalid_env_name, invalid_negative_value, true, 0, true},
+		{"EnvBAD_ValNEG_optional", invalid_env_name, invalid_negative_value, false, 0, false},
 	}
 
 	for _, c := range cases {
