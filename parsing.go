@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 )
 
 func parse[T any]() (*T, error) {
@@ -58,6 +59,12 @@ func parse[T any]() (*T, error) {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetUint(res)
+		case reflect.TypeFor[time.Duration]().Kind():
+			res, err := getDuration(env_name, required)
+			if err != nil {
+				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+			}
+			f_v.Set(reflect.ValueOf(res))
 		default:
 			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}
