@@ -52,6 +52,12 @@ func parse[T any]() (*T, error) {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetFloat(res)
+		case reflect.Uint | reflect.Uint8 | reflect.Uint16 | reflect.Uint32 | reflect.Uint64:
+			res, err := getUint(env_name, required)
+			if err != nil {
+				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+			}
+			f_v.SetUint(res)
 		default:
 			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}
