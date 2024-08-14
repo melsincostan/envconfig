@@ -23,6 +23,8 @@ type structString struct {
 type structInt struct {
 	Int64Field        int64 `env:"TEST_INT64" binding:"REQUIRED"`
 	OptionalInt8Field int8  `env:"TEST_INT8"`
+	UnusedInt16Field  int16
+	UnusedInt32Field  int32
 }
 
 type structFloat struct {
