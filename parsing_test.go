@@ -5,6 +5,7 @@ import (
 	"math"
 	"os"
 	"testing"
+	"time"
 )
 
 type structUnexportedField struct {
@@ -37,6 +38,11 @@ type structUint struct {
 	OptionalUint8Field uint8  `env:"TEST_UINT8"`
 	UnusedUint16Field  uint16
 	UnusedUint32Field  uint32
+}
+
+type structDuration struct {
+	DurationField         time.Duration `env:"TEST_DURATION" binding:"required"`
+	OptionalDurationField time.Duration `env:"OPTIONAL_TEST_DURATION"`
 }
 
 func TestParseNotStruct(t *testing.T) {
@@ -291,6 +297,55 @@ func TestParseUint(t *testing.T) {
 	os.Unsetenv("TEST_UINT64")
 
 	res, err = parse[structUint]()
+
+	if err == nil {
+		t.Error("expected to see an error")
+	}
+
+	if res != nil {
+		t.Error("expected a nil result")
+	}
+}
+
+func TestParseDuration(t *testing.T) {
+	test_duration := 5 * time.Minute
+	optional_test_duration := 6*time.Hour + 30*time.Minute
+	os.Setenv("TEST_DURATION", fmt.Sprintf("%s", test_duration.String()))
+	os.Setenv("OPTIONAL_TEST_DURATION", fmt.Sprintf("%s", optional_test_duration.String()))
+
+	res, err := parse[structDuration]()
+
+	if err != nil {
+		t.Errorf("expected to see no error, got %s", err.Error())
+	}
+
+	if res.DurationField != test_duration {
+		t.Errorf("wanted '%s', got '%s'", test_duration, res.DurationField)
+	}
+
+	if res.OptionalDurationField != optional_test_duration {
+		t.Errorf("wanted '%s', got '%s'", optional_test_duration, res.OptionalDurationField)
+	}
+
+	os.Unsetenv("OPTIONAL_TEST_DURATION")
+
+	res, err = parse[structDuration]()
+
+	if err != nil {
+		t.Errorf("expected no error, got %s", err.Error())
+	}
+
+	if res.DurationField != test_duration {
+		t.Errorf("wanted '%s', got '%s'", test_duration, res.DurationField)
+	}
+
+	if res.OptionalDurationField != 0 {
+		t.Errorf("wanted empty string, got '%s'", res.OptionalDurationField)
+	}
+
+	os.Unsetenv("TEST_DURATION")
+
+	res, err = parse[structDuration]()
 
 	if err == nil {
 		t.Error("expected to see an error")
