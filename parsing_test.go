@@ -113,7 +113,7 @@ func TestParseString(t *testing.T) {
 }
 
 func TestParseInt(t *testing.T) {
-	test_value := math.MaxInt32
+	test_value := int64(math.MaxInt32)
 	int8_test_value := int8(5)
 	os.Setenv("TEST_INT64", fmt.Sprintf("%d", test_value))
 	os.Setenv("TEST_INT8", fmt.Sprintf("%d", int8_test_value))
@@ -124,7 +124,7 @@ func TestParseInt(t *testing.T) {
 		t.Errorf("expected to see no error, got %s", err.Error())
 	}
 
-	if int(res.Int64Field) != test_value {
+	if res.Int64Field != test_value {
 		t.Errorf("wanted '%d', got '%d'", test_value, res.Int64Field)
 	}
 
@@ -140,7 +140,7 @@ func TestParseInt(t *testing.T) {
 		t.Errorf("expected to see no error, got %s", err.Error())
 	}
 
-	if int(res.Int64Field) != test_value {
+	if res.Int64Field != test_value {
 		t.Errorf("wanted '%d', got '%d'", test_value, res.Int64Field)
 	}
 
@@ -156,7 +156,7 @@ func TestParseInt(t *testing.T) {
 		t.Errorf("expected no error, got %s", err.Error())
 	}
 
-	if int(res.Int64Field) != test_value {
+	if res.Int64Field != test_value {
 		t.Errorf("wanted '%d', got '%d'", test_value, res.Int64Field)
 	}
 
