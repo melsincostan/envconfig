@@ -1,0 +1,3 @@
+*.out
+# Makefile is only used to make getting a code coverage visualization up easier
+Makefile
