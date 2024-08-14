@@ -32,6 +32,13 @@ type structFloat struct {
 	OptionalFloat32Field float32 `env:"TEST_FLOAT32"`
 }
 
+type structUint struct {
+	Uint64Field        uint64 `env:"TEST_UINT64" binding:"REQUIRED"`
+	OptionalUint8Field uint8  `env:"TEST_UINT8"`
+	UnusedUint16Field  uint16
+	UnusedUint32Field  uint32
+}
+
 func TestParseNotStruct(t *testing.T) {
 	res, err := parse[int]()
 	if err == nil {
@@ -219,6 +226,71 @@ func TestParseFloat(t *testing.T) {
 	os.Unsetenv("TEST_FLOAT64")
 
 	res, err = parse[structFloat]()
+
+	if err == nil {
+		t.Error("expected to see an error")
+	}
+
+	if res != nil {
+		t.Error("expected a nil result")
+	}
+}
+
+func TestParseUint(t *testing.T) {
+	test_value := uint64(math.MaxInt32)
+	uint8_test_value := uint8(5)
+	os.Setenv("TEST_UINT64", fmt.Sprintf("%d", test_value))
+	os.Setenv("TEST_UINT8", fmt.Sprintf("%d", uint8_test_value))
+
+	res, err := parse[structUint]()
+
+	if err != nil {
+		t.Errorf("expected to see no error, got %s", err.Error())
+	}
+
+	if res.Uint64Field != test_value {
+		t.Errorf("wanted '%d', got '%d'", test_value, res.Uint64Field)
+	}
+
+	if res.OptionalUint8Field != uint8_test_value {
+		t.Errorf("wanted '%d', got '%d'", uint8_test_value, res.OptionalUint8Field)
+	}
+
+	os.Setenv("TEST_UINT8", fmt.Sprintf("%d", test_value))
+
+	res, err = parse[structUint]()
+
+	if err != nil {
+		t.Errorf("expected to see no error, got %s", err.Error())
+	}
+
+	if res.Uint64Field != test_value {
+		t.Errorf("wanted '%d', got '%d'", test_value, res.Uint64Field)
+	}
+
+	if res.OptionalUint8Field != uint8(test_value) {
+		t.Errorf("wanted '%d', got '%d'", uint8(test_value), res.OptionalUint8Field)
+	}
+
+	os.Unsetenv("TEST_UINT8")
+
+	res, err = parse[structUint]()
+
+	if err != nil {
+		t.Errorf("expected no error, got %s", err.Error())
+	}
+
+	if res.Uint64Field != test_value {
+		t.Errorf("wanted '%d', got '%d'", test_value, res.Uint64Field)
+	}
+
+	if res.OptionalUint8Field != 0 {
+		t.Errorf("wanted '0', got '%d'", res.OptionalUint8Field)
+	}
+
+	os.Unsetenv("TEST_UINT64")
+
+	res, err = parse[structUint]()
 
 	if err == nil {
 		t.Error("expected to see an error")
