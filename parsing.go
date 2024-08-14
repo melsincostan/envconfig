@@ -34,32 +34,32 @@ func parse[T any]() (*T, error) {
 			return nil, fmt.Errorf("field %s: not assignable", f_t.Name)
 		}
 
-		switch f_t.Type.Kind() {
-		case reflect.String:
+		switch f_v.Interface().(type) {
+		case string:
 			res, err := getString(env_name, required)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetString(res)
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		case int, int8, int16, int32, int64:
 			res, err := getInt(env_name, required)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetInt(res) // TODO; check if this truncates if assigning a number with higher bitsize to a field with smaller bitsize (for example in16-size number into int8)/
-		case reflect.Float32, reflect.Float64:
+		case float32, float64:
 			res, err := getFloat(env_name, required)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetFloat(res)
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		case uint, uint8, uint16, uint32, uint64:
 			res, err := getUint(env_name, required)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetUint(res)
-		case reflect.TypeFor[time.Duration]().Kind():
+		case time.Duration:
 			res, err := getDuration(env_name, required)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
