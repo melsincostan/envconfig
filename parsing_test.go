@@ -25,6 +25,11 @@ type structInt struct {
 	OptionalInt8Field int8  `env:"TEST_INT8"`
 }
 
+type structFloat struct {
+	Float64Field         float64 `env:"TEST_FLOAT64" binding:"required"`
+	OptionalFloat32Field float32 `env:"TEST_FLOAT32"`
+}
+
 func TestParseNotStruct(t *testing.T) {
 	res, err := parse[int]()
 	if err == nil {
@@ -162,6 +167,56 @@ func TestParseInt(t *testing.T) {
 	os.Unsetenv("TEST_INT64")
 
 	res, err = parse[structInt]()
+
+	if err == nil {
+		t.Error("expected to see an error")
+	}
+
+	if res != nil {
+		t.Error("expected a nil result")
+	}
+}
+
+func TestParseFloat(t *testing.T) {
+	test_value := float64(7.3)
+	float32_test_value := float32(6.4)
+	delta := 0.00001
+	os.Setenv("TEST_FLOAT64", fmt.Sprintf("%.2f", test_value))
+	os.Setenv("TEST_FLOAT32", fmt.Sprintf("%.2f", float32_test_value))
+
+	res, err := parse[structFloat]()
+
+	if err != nil {
+		t.Errorf("expected to see no error, got %s", err.Error())
+	}
+
+	if res.Float64Field > test_value+delta || res.Float64Field < test_value-delta {
+		t.Errorf("wanted '%.2f', got '%.2f'", test_value, res.Float64Field)
+	}
+
+	if res.OptionalFloat32Field > float32_test_value+float32(delta) || res.OptionalFloat32Field < float32_test_value-float32(delta) {
+		t.Errorf("wanted '%.2f', got '%.2f'", float32_test_value, res.OptionalFloat32Field)
+	}
+
+	os.Unsetenv("TEST_FLOAT32")
+
+	res, err = parse[structFloat]()
+
+	if err != nil {
+		t.Errorf("expected no error, got %s", err.Error())
+	}
+
+	if res.Float64Field > test_value+delta || res.Float64Field < test_value-delta {
+		t.Errorf("wanted '%.2f', got '%.2f'", test_value, res.Float64Field)
+	}
+
+	if res.OptionalFloat32Field != 0 {
+		t.Errorf("wanted '0', got '%.2f'", res.OptionalFloat32Field)
+	}
+
+	os.Unsetenv("TEST_FLOAT64")
+
+	res, err = parse[structFloat]()
 
 	if err == nil {
 		t.Error("expected to see an error")
