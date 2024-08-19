@@ -18,7 +18,7 @@ type structUnsupportedType struct {
 
 type structString struct {
 	StringField         string `env:"TEST_STRING" binding:"required"`
-	OptionalStringField string `env:"OPTIONAL_TEST_STRING"`
+	OptionalStringField string `env:"OPTIONAL_TEST_STRING" default:"test_default_value"`
 }
 
 type structInt struct {
@@ -110,7 +110,7 @@ func TestParseString(t *testing.T) {
 		t.Errorf("wanted '%s', got '%s'", test_string, res.StringField)
 	}
 
-	if res.OptionalStringField != "" {
+	if res.OptionalStringField != "test_default_value" {
 		t.Errorf("wanted empty string, got '%s'", res.OptionalStringField)
 	}
 
