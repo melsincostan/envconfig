@@ -28,6 +28,8 @@ func parse[T any]() (*T, error) {
 			env_name = strings.ToUpper(f_t.Name)
 		}
 
+		def_val, has_default := f_t.Tag.Lookup("default")
+
 		required := strings.ToLower(f_t.Tag.Get("binding")) == "required"
 
 		if !f_v.CanSet() {
@@ -42,7 +44,7 @@ func parse[T any]() (*T, error) {
 			}
 			f_v.SetString(res)
 		case int, int8, int16, int32, int64:
-			res, err := getInt(env_name, required)
+			res, err := getInt(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
