@@ -56,7 +56,7 @@ func parse[T any]() (*T, error) {
 			}
 			f_v.SetFloat(res)
 		case uint, uint8, uint16, uint32, uint64:
-			res, err := getUint(env_name, required)
+			res, err := getUint(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
