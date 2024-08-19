@@ -38,7 +38,7 @@ func parse[T any]() (*T, error) {
 
 		switch f_v.Interface().(type) {
 		case string:
-			res, err := getString(env_name, required)
+			res, err := getStringDef(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
@@ -50,19 +50,19 @@ func parse[T any]() (*T, error) {
 			}
 			f_v.SetInt(res) // TODO; check if this truncates if assigning a number with higher bitsize to a field with smaller bitsize (for example in16-size number into int8)/
 		case float32, float64:
-			res, err := getFloat(env_name, required)
+			res, err := getFloat(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetFloat(res)
 		case uint, uint8, uint16, uint32, uint64:
-			res, err := getUint(env_name, required)
+			res, err := getUint(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetUint(res)
 		case time.Duration:
-			res, err := getDuration(env_name, required)
+			res, err := getDuration(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}

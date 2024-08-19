@@ -18,31 +18,31 @@ type structUnsupportedType struct {
 
 type structString struct {
 	StringField         string `env:"TEST_STRING" binding:"required"`
-	OptionalStringField string `env:"OPTIONAL_TEST_STRING"`
+	OptionalStringField string `env:"OPTIONAL_TEST_STRING" default:"test_default_value"`
 }
 
 type structInt struct {
 	Int64Field        int64 `env:"TEST_INT64" binding:"REQUIRED"`
-	OptionalInt8Field int8  `env:"TEST_INT8"`
+	OptionalInt8Field int8  `env:"TEST_INT8" default:"3"`
 	UnusedInt16Field  int16
 	UnusedInt32Field  int32
 }
 
 type structFloat struct {
 	Float64Field         float64 `env:"TEST_FLOAT64" binding:"required"`
-	OptionalFloat32Field float32 `env:"TEST_FLOAT32"`
+	OptionalFloat32Field float32 `env:"TEST_FLOAT32" default:"4.5"`
 }
 
 type structUint struct {
 	Uint64Field        uint64 `env:"TEST_UINT64" binding:"REQUIRED"`
-	OptionalUint8Field uint8  `env:"TEST_UINT8"`
+	OptionalUint8Field uint8  `env:"TEST_UINT8" default:"2"`
 	UnusedUint16Field  uint16
 	UnusedUint32Field  uint32
 }
 
 type structDuration struct {
 	DurationField         time.Duration `env:"TEST_DURATION" binding:"required"`
-	OptionalDurationField time.Duration `env:"OPTIONAL_TEST_DURATION"`
+	OptionalDurationField time.Duration `env:"OPTIONAL_TEST_DURATION" default:"2m35s"`
 }
 
 func TestParseNotStruct(t *testing.T) {
@@ -110,7 +110,7 @@ func TestParseString(t *testing.T) {
 		t.Errorf("wanted '%s', got '%s'", test_string, res.StringField)
 	}
 
-	if res.OptionalStringField != "" {
+	if res.OptionalStringField != "test_default_value" {
 		t.Errorf("wanted empty string, got '%s'", res.OptionalStringField)
 	}
 
@@ -175,7 +175,7 @@ func TestParseInt(t *testing.T) {
 		t.Errorf("wanted '%d', got '%d'", test_value, res.Int64Field)
 	}
 
-	if res.OptionalInt8Field != 0 {
+	if res.OptionalInt8Field != 3 {
 		t.Errorf("wanted '0', got '%d'", res.OptionalInt8Field)
 	}
 
@@ -225,7 +225,7 @@ func TestParseFloat(t *testing.T) {
 		t.Errorf("wanted '%.2f', got '%.2f'", test_value, res.Float64Field)
 	}
 
-	if res.OptionalFloat32Field != 0 {
+	if res.OptionalFloat32Field != 4.5 {
 		t.Errorf("wanted '0', got '%.2f'", res.OptionalFloat32Field)
 	}
 
@@ -290,7 +290,7 @@ func TestParseUint(t *testing.T) {
 		t.Errorf("wanted '%d', got '%d'", test_value, res.Uint64Field)
 	}
 
-	if res.OptionalUint8Field != 0 {
+	if res.OptionalUint8Field != 2 {
 		t.Errorf("wanted '0', got '%d'", res.OptionalUint8Field)
 	}
 
@@ -339,7 +339,7 @@ func TestParseDuration(t *testing.T) {
 		t.Errorf("wanted '%s', got '%s'", test_duration, res.DurationField)
 	}
 
-	if res.OptionalDurationField != 0 {
+	if res.OptionalDurationField != 2*time.Minute+35*time.Second {
 		t.Errorf("wanted empty string, got '%s'", res.OptionalDurationField)
 	}
 

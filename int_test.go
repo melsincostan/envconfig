@@ -34,7 +34,7 @@ func TestGetInt(t *testing.T) {
 		{"EnvBAD_ValOK_optional", invalid_env_name, valid_value, false, 5, false, "5", true},
 		{"EnvBAD_ValOK_optional_DefBAD", invalid_env_name, valid_value, false, 0, true, "aabbcc", true},
 		{"EnvOK_ValWHITESPACE_required", valid_env_name, whitespace_value, true, 0, true, "0", true},
-		{"EnvOK_ValWHITESPACE_optional", valid_env_name, whitespace_value, false, 0, false, "0", true},
+		{"EnvOK_ValWHITESPACE_optional", valid_env_name, whitespace_value, false, 0, false, "", false},
 		{"EnvBAD_ValWHITESPACE_required", invalid_env_name, whitespace_value, true, 0, true, "0", true},
 		{"EnvBAD_ValWHITESPACE_optional", invalid_env_name, whitespace_value, false, 0, false, "0", true},
 		{"EnvOK_ValTRIM_required", valid_env_name, trimmable_value, true, valid_value_int64, false, "0", true},

@@ -56,3 +56,46 @@ func TestGetString(t *testing.T) {
 		})
 	}
 }
+
+func TestGetStringDef(t *testing.T) {
+	valid_env_name := "TEST_STRING_ENV_NAME"
+	invalid_env_name := fmt.Sprintf("%s_INVALID", valid_env_name)
+
+	valid_value := "TEST_STRING_ENV_VALUE"
+
+	cases := []struct {
+		Name        string
+		EnvName     string
+		EnvVal      string
+		Required    bool
+		Expect      string
+		ExpectError bool
+		Default     string
+		HasDefault  bool
+	}{
+		{"EnvBAD_ValOK_required", invalid_env_name, valid_value, true, "", true, "", false},
+		{"EnvBAD_ValOK_optional", invalid_env_name, valid_value, false, "", false, "", false},
+		{"EnvBAD_ValOK_optional_DefOK", invalid_env_name, valid_value, false, "default", false, "default", true},
+		{"EnvBAD_ValOK_optional_DefEMPTY", invalid_env_name, valid_value, false, "", false, "", true},
+	}
+
+	for _, c := range cases {
+		c := c                             // local scope
+		t.Run(c.Name, func(t *testing.T) { // can't run in parallel, since there might otherwise be race conditions with setting / unsetting env vars
+			os.Setenv(c.EnvName, c.EnvVal)
+			defer os.Unsetenv(c.EnvName) // ensure to clean up after ourselves :3
+
+			res, err := getStringDef(valid_env_name, c.Required, c.Default, c.HasDefault)
+			if err != nil && !c.ExpectError {
+				t.Errorf("expected no error, got '%s'", err.Error())
+			} else if err == nil && c.ExpectError {
+				t.Error("expected to see an error")
+			}
+
+			if res != c.Expect {
+				t.Errorf("wanted '%s', got '%s'", c.Expect, res)
+			}
+
+		})
+	}
+}
