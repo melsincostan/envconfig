@@ -50,7 +50,7 @@ func parse[T any]() (*T, error) {
 			}
 			f_v.SetInt(res) // TODO; check if this truncates if assigning a number with higher bitsize to a field with smaller bitsize (for example in16-size number into int8)/
 		case float32, float64:
-			res, err := getFloat(env_name, required)
+			res, err := getFloat(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
