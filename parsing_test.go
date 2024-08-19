@@ -42,7 +42,7 @@ type structUint struct {
 
 type structDuration struct {
 	DurationField         time.Duration `env:"TEST_DURATION" binding:"required"`
-	OptionalDurationField time.Duration `env:"OPTIONAL_TEST_DURATION"`
+	OptionalDurationField time.Duration `env:"OPTIONAL_TEST_DURATION" default:"2m35s"`
 }
 
 func TestParseNotStruct(t *testing.T) {
@@ -339,7 +339,7 @@ func TestParseDuration(t *testing.T) {
 		t.Errorf("wanted '%s', got '%s'", test_duration, res.DurationField)
 	}
 
-	if res.OptionalDurationField != 0 {
+	if res.OptionalDurationField != 2*time.Minute+35*time.Second {
 		t.Errorf("wanted empty string, got '%s'", res.OptionalDurationField)
 	}
 

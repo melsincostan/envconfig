@@ -62,7 +62,7 @@ func parse[T any]() (*T, error) {
 			}
 			f_v.SetUint(res)
 		case time.Duration:
-			res, err := getDuration(env_name, required)
+			res, err := getDuration(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
