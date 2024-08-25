@@ -67,6 +67,12 @@ func parse[T any]() (*T, error) {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.Set(reflect.ValueOf(res))
+		case bool:
+			res, err := getBool(env_name, required, def_val, has_default)
+			if err != nil {
+				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+			}
+			f_v.SetBool(res)
 		default:
 			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}
