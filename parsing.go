@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func parse[T any]() (*T, error) {
+func Parse[T any]() (*T, error) {
 	ptr := new(T)
 	ptr_t := reflect.TypeOf(ptr)
 	ptr_v := reflect.ValueOf(ptr)

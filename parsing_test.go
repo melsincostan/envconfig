@@ -46,7 +46,7 @@ type structDuration struct {
 }
 
 func TestParseNotStruct(t *testing.T) {
-	res, err := parse[int]()
+	res, err := Parse[int]()
 	if err == nil {
 		t.Error("expected to see an error")
 	}
@@ -57,7 +57,7 @@ func TestParseNotStruct(t *testing.T) {
 }
 
 func TestParseUnexportedField(t *testing.T) {
-	res, err := parse[structUnexportedField]()
+	res, err := Parse[structUnexportedField]()
 	if err == nil {
 		t.Error("expected to see an error")
 	}
@@ -68,7 +68,7 @@ func TestParseUnexportedField(t *testing.T) {
 }
 
 func TestParseUnsupportedType(t *testing.T) {
-	res, err := parse[structUnsupportedType]()
+	res, err := Parse[structUnsupportedType]()
 	if err == nil {
 		t.Error("expected to see an error")
 	}
@@ -84,7 +84,7 @@ func TestParseString(t *testing.T) {
 	os.Setenv("TEST_STRING", test_string)
 	os.Setenv("OPTIONAL_TEST_STRING", optional_test_string)
 
-	res, err := parse[structString]()
+	res, err := Parse[structString]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -100,7 +100,7 @@ func TestParseString(t *testing.T) {
 
 	os.Unsetenv("OPTIONAL_TEST_STRING")
 
-	res, err = parse[structString]()
+	res, err = Parse[structString]()
 
 	if err != nil {
 		t.Errorf("expected no error, got %s", err.Error())
@@ -116,7 +116,7 @@ func TestParseString(t *testing.T) {
 
 	os.Unsetenv("TEST_STRING")
 
-	res, err = parse[structString]()
+	res, err = Parse[structString]()
 
 	if err == nil {
 		t.Error("expected to see an error")
@@ -133,7 +133,7 @@ func TestParseInt(t *testing.T) {
 	os.Setenv("TEST_INT64", fmt.Sprintf("%d", test_value))
 	os.Setenv("TEST_INT8", fmt.Sprintf("%d", int8_test_value))
 
-	res, err := parse[structInt]()
+	res, err := Parse[structInt]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -149,7 +149,7 @@ func TestParseInt(t *testing.T) {
 
 	os.Setenv("TEST_INT8", fmt.Sprintf("%d", test_value))
 
-	res, err = parse[structInt]()
+	res, err = Parse[structInt]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -165,7 +165,7 @@ func TestParseInt(t *testing.T) {
 
 	os.Unsetenv("TEST_INT8")
 
-	res, err = parse[structInt]()
+	res, err = Parse[structInt]()
 
 	if err != nil {
 		t.Errorf("expected no error, got %s", err.Error())
@@ -181,7 +181,7 @@ func TestParseInt(t *testing.T) {
 
 	os.Unsetenv("TEST_INT64")
 
-	res, err = parse[structInt]()
+	res, err = Parse[structInt]()
 
 	if err == nil {
 		t.Error("expected to see an error")
@@ -199,7 +199,7 @@ func TestParseFloat(t *testing.T) {
 	os.Setenv("TEST_FLOAT64", fmt.Sprintf("%.2f", test_value))
 	os.Setenv("TEST_FLOAT32", fmt.Sprintf("%.2f", float32_test_value))
 
-	res, err := parse[structFloat]()
+	res, err := Parse[structFloat]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -215,7 +215,7 @@ func TestParseFloat(t *testing.T) {
 
 	os.Unsetenv("TEST_FLOAT32")
 
-	res, err = parse[structFloat]()
+	res, err = Parse[structFloat]()
 
 	if err != nil {
 		t.Errorf("expected no error, got %s", err.Error())
@@ -231,7 +231,7 @@ func TestParseFloat(t *testing.T) {
 
 	os.Unsetenv("TEST_FLOAT64")
 
-	res, err = parse[structFloat]()
+	res, err = Parse[structFloat]()
 
 	if err == nil {
 		t.Error("expected to see an error")
@@ -248,7 +248,7 @@ func TestParseUint(t *testing.T) {
 	os.Setenv("TEST_UINT64", fmt.Sprintf("%d", test_value))
 	os.Setenv("TEST_UINT8", fmt.Sprintf("%d", uint8_test_value))
 
-	res, err := parse[structUint]()
+	res, err := Parse[structUint]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -264,7 +264,7 @@ func TestParseUint(t *testing.T) {
 
 	os.Setenv("TEST_UINT8", fmt.Sprintf("%d", test_value))
 
-	res, err = parse[structUint]()
+	res, err = Parse[structUint]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -280,7 +280,7 @@ func TestParseUint(t *testing.T) {
 
 	os.Unsetenv("TEST_UINT8")
 
-	res, err = parse[structUint]()
+	res, err = Parse[structUint]()
 
 	if err != nil {
 		t.Errorf("expected no error, got %s", err.Error())
@@ -296,7 +296,7 @@ func TestParseUint(t *testing.T) {
 
 	os.Unsetenv("TEST_UINT64")
 
-	res, err = parse[structUint]()
+	res, err = Parse[structUint]()
 
 	if err == nil {
 		t.Error("expected to see an error")
@@ -313,7 +313,7 @@ func TestParseDuration(t *testing.T) {
 	os.Setenv("TEST_DURATION", fmt.Sprintf("%s", test_duration.String()))
 	os.Setenv("OPTIONAL_TEST_DURATION", fmt.Sprintf("%s", optional_test_duration.String()))
 
-	res, err := parse[structDuration]()
+	res, err := Parse[structDuration]()
 
 	if err != nil {
 		t.Errorf("expected to see no error, got %s", err.Error())
@@ -329,7 +329,7 @@ func TestParseDuration(t *testing.T) {
 
 	os.Unsetenv("OPTIONAL_TEST_DURATION")
 
-	res, err = parse[structDuration]()
+	res, err = Parse[structDuration]()
 
 	if err != nil {
 		t.Errorf("expected no error, got %s", err.Error())
@@ -345,7 +345,7 @@ func TestParseDuration(t *testing.T) {
 
 	os.Unsetenv("TEST_DURATION")
 
-	res, err = parse[structDuration]()
+	res, err = Parse[structDuration]()
 
 	if err == nil {
 		t.Error("expected to see an error")
