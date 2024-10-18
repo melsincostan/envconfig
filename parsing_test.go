@@ -45,6 +45,11 @@ type structDuration struct {
 	OptionalDurationField time.Duration `env:"OPTIONAL_TEST_DURATION" default:"2m35s"`
 }
 
+type structBool struct {
+	BoolField         bool `env:"TEST_BOOL" binding:"required"`
+	OptionalBoolField bool `env:"OPTIONAL_TEST_BOOL" default:"true"`
+}
+
 func TestParseNotStruct(t *testing.T) {
 	res, err := Parse[int]()
 	if err == nil {
@@ -353,5 +358,50 @@ func TestParseDuration(t *testing.T) {
 
 	if res != nil {
 		t.Error("expected a nil result")
+	}
+}
+
+func TestParseBool(t *testing.T) {
+	req_val := true
+	opt_val := false
+	os.Setenv("TEST_BOOL", fmt.Sprintf("%t", req_val))
+	os.Setenv("OPTIONAL_TEST_BOOL", fmt.Sprintf("%t", opt_val))
+
+	res, err := Parse[structBool]()
+
+	if err != nil {
+		t.Errorf("expected to see no error, got %s", err.Error())
+	}
+
+	if res.BoolField != req_val {
+		t.Errorf("req: wanted %t, got %t", req_val, res.BoolField)
+	}
+
+	if res.OptionalBoolField != opt_val {
+		t.Errorf("opt: wanted %t, got %t", opt_val, res.OptionalBoolField)
+	}
+
+	os.Unsetenv("OPTIONAL_TEST_BOOL")
+
+	res, err = Parse[structBool]()
+
+	if err != nil {
+		t.Errorf("expected no error, got %s", err.Error())
+	}
+
+	if res.BoolField != req_val {
+		t.Errorf("req: expected %t, got %t", req_val, res.BoolField)
+	}
+
+	if res.OptionalBoolField != true { // value set in the default field of the tags
+		t.Errorf("opt: expected %t, got %t", true, res.OptionalBoolField)
+	}
+
+	os.Unsetenv("TEST_BOOL")
+
+	res, err = Parse[structBool]()
+
+	if err == nil {
+		t.Error("expected error, got nothing")
 	}
 }
