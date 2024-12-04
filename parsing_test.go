@@ -404,4 +404,8 @@ func TestParseBool(t *testing.T) {
 	if err == nil {
 		t.Error("expected error, got nothing")
 	}
+
+	if res != nil {
+		t.Errorf("expected nil, got %#v", *res)
+	}
 }
