@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Parse[T any]() (*T, error) {
+func Parse[T any](scopes ...string) (*T, error) {
 	ptr := new(T)
 	ptr_t := reflect.TypeOf(ptr)
 	ptr_v := reflect.ValueOf(ptr)
@@ -22,10 +22,11 @@ func Parse[T any]() (*T, error) {
 		f_t := obj_t.Field(i)
 		f_v := obj_v.Field(i)
 
-		env_name, has_env_tag := f_t.Tag.Lookup("env")
+		raw_env_name, has_env_tag := f_t.Tag.Lookup("env")
+		env_name := name(raw_env_name, scopes...)
 
 		if !has_env_tag {
-			env_name = strings.ToUpper(f_t.Name)
+			env_name = name(strings.ToUpper(f_t.Name), scopes...)
 		}
 
 		def_val, has_default := f_t.Tag.Lookup("default")
@@ -78,4 +79,11 @@ func Parse[T any]() (*T, error) {
 		}
 	}
 	return ptr, nil
+}
+
+func name(name string, parts ...string) string {
+	if len(parts) > 0 {
+		return fmt.Sprintf("%s_%s", strings.Join(parts, "_"), name)
+	}
+	return name
 }
