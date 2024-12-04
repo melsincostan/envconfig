@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+type structSingle struct {
+	Field string `env:"TEST_SINGLE" default:"default"`
+}
+
 type structUnexportedField struct {
 	unexportedField string
 }
@@ -451,5 +455,44 @@ func TestParseSkip(t *testing.T) {
 
 	if res == nil {
 		t.Errorf("expected result, got nil")
+	}
+}
+
+func TestParseScoped(t *testing.T) {
+	cases := []struct {
+		Name   string
+		Envar  string
+		Enval  string
+		Want   string
+		Scopes []string
+	}{
+		{"EnvOKPrefixNil", "TEST_SINGLE", "environment", "environment", nil},
+		{"EnvBadPrefixNil", "NOT_TEST_SINGLE", "environment", "default", nil},
+		{"EnvOKPrefixEmpty", "TEST_SINGLE", "environment", "environment", []string{}},
+		{"EnvBadPrefixEmpty", "NOT_TEST_SINGLE", "environment", "default", []string{}},
+		{"EnvOKSinglePrefix", "PREFIX_TEST_SINGLE", "environment", "environment", []string{"PREFIX"}},
+		{"EnvBadSinglePrefix", "NOT_PREFIX_TEST_SINGLE", "environment", "default", []string{"PREFIX"}},
+		{"EnvNoPrefixSinglePrefix", "TEST_SINGLE", "environment", "default", []string{"PREFIX"}}, // making sure that the prefix isn't getting ignored, EnOKSinglePrefix would catch it but this makes origin clearer
+		{"EnvOkTwoPrefix", "PRE_FIX_TEST_SINGLE", "environment", "environment", []string{"PRE", "FIX"}},
+		{"EnvBadTwoPrefix", "NOT_PRE_FIX_TEST_SINGLE", "environment", "default", []string{"PRE", "FIX"}},
+		{"EnvNoPrefixTwoPrefix", "TEST_SINGLE", "environment", "default", []string{"PRE", "FIX"}}, // same as EnvNoPrefixSinglePrefix :>
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.Name, func(t *testing.T) {
+			os.Setenv(c.Envar, c.Enval)
+			res, err := Parse[structSingle](c.Scopes...)
+			if err != nil {
+				t.Errorf("expected no error, got %s", err.Error())
+			}
+
+			if res == nil {
+				t.Error("expected result, got nil")
+			} else if res.Field != c.Want {
+				t.Errorf("wanted '%s', got '%s'", c.Want, res.Field)
+			}
+			os.Unsetenv(c.Envar)
+		})
 	}
 }
