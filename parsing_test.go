@@ -8,12 +8,21 @@ import (
 	"time"
 )
 
+type structSingle struct {
+	Field string `env:"TEST_SINGLE" default:"default"`
+}
+
 type structUnexportedField struct {
 	unexportedField string
 }
 
 type structUnsupportedType struct {
 	UnsupportedField any
+}
+
+type structTestSkip struct {
+	Working          string `env:"TEST_STRING_WOKRING" default:"working"`
+	UnsupportedField any    `env:"-"`
 }
 
 type structString struct {
@@ -403,5 +412,87 @@ func TestParseBool(t *testing.T) {
 
 	if err == nil {
 		t.Error("expected error, got nothing")
+	}
+
+	if res != nil {
+		t.Errorf("expected nil, got %#v", *res)
+	}
+}
+
+func TestName(t *testing.T) {
+	cases := []struct {
+		CaseName string
+		Name     string
+		Scopes   []string
+		Want     string
+	}{
+		{"NameExtrasNil", "TEST", nil, "TEST"},
+		{"NameExtrasEmpty", "TEST", []string{}, "TEST"},
+		{"NameOneExtra", "TEST", []string{"SCOPE1"}, "SCOPE1_TEST"},
+		{"NameThreeExtras", "TEST", []string{"ONE", "TWO", "THREE"}, "ONE_TWO_THREE_TEST"},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.CaseName, func(t *testing.T) {
+			t.Parallel()
+			res := name(c.Name, c.Scopes...)
+			if res != c.Want {
+				t.Errorf("wanted '%s', got '%s'", c.Want, res)
+			}
+		})
+	}
+}
+
+func TestParseSkip(t *testing.T) {
+	// test that skipping a field work
+	// if this works, then the struct should parse fine
+	// otherwise, there should be an error
+	res, err := Parse[structTestSkip]()
+	if err != nil {
+		t.Errorf("expected no error, got: %s", err.Error())
+	}
+
+	if res == nil {
+		t.Errorf("expected result, got nil")
+	}
+}
+
+func TestParseScoped(t *testing.T) {
+	cases := []struct {
+		Name   string
+		Envar  string
+		Enval  string
+		Want   string
+		Scopes []string
+	}{
+		{"EnvOKPrefixNil", "TEST_SINGLE", "environment", "environment", nil},
+		{"EnvBadPrefixNil", "NOT_TEST_SINGLE", "environment", "default", nil},
+		{"EnvOKPrefixEmpty", "TEST_SINGLE", "environment", "environment", []string{}},
+		{"EnvBadPrefixEmpty", "NOT_TEST_SINGLE", "environment", "default", []string{}},
+		{"EnvOKSinglePrefix", "PREFIX_TEST_SINGLE", "environment", "environment", []string{"PREFIX"}},
+		{"EnvBadSinglePrefix", "NOT_PREFIX_TEST_SINGLE", "environment", "default", []string{"PREFIX"}},
+		{"EnvNoPrefixSinglePrefix", "TEST_SINGLE", "environment", "default", []string{"PREFIX"}}, // making sure that the prefix isn't getting ignored, EnOKSinglePrefix would catch it but this makes origin clearer
+		{"EnvOkTwoPrefix", "PRE_FIX_TEST_SINGLE", "environment", "environment", []string{"PRE", "FIX"}},
+		{"EnvBadTwoPrefix", "NOT_PRE_FIX_TEST_SINGLE", "environment", "default", []string{"PRE", "FIX"}},
+		{"EnvNoPrefixTwoPrefix", "TEST_SINGLE", "environment", "default", []string{"PRE", "FIX"}}, // same as EnvNoPrefixSinglePrefix :>
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.Name, func(t *testing.T) {
+			os.Setenv(c.Envar, c.Enval)
+			res, err := Parse[structSingle](c.Scopes...)
+			if err != nil {
+				t.Errorf("expected no error, got %s", err.Error())
+			}
+
+			if res == nil {
+				t.Error("expected result, got nil")
+			} else if res.Field != c.Want {
+				t.Errorf("wanted '%s', got '%s'", c.Want, res.Field)
+			}
+			os.Unsetenv(c.Envar)
+		})
 	}
 }
