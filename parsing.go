@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Parse takes in a struct and attempts to fill it using environment variables.
+// Parse creates a struct of type T and attempts to fill it using environment variables.
 // This behaviour can be adjusted through struct tags.
 // The "env" struct tag will set the name of the environment variable this function looks for.
 // If strings are passed as arguments to Parse, then they will be joined with "_" and the resulting string, with a trailing "_", will be used as a prefix for the capitalized field name or the value of the "env" tag.
@@ -32,6 +32,10 @@ func Parse[T any](scopes ...string) (*T, error) {
 
 		raw_env_name, has_env_tag := f_t.Tag.Lookup("env")
 		env_name := name(raw_env_name, scopes...)
+
+		if raw_env_name == "-" {
+			continue
+		}
 
 		if !has_env_tag {
 			env_name = name(strings.ToUpper(f_t.Name), scopes...)
