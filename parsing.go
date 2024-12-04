@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+// Parse takes in a struct and attempts to fill it using environment variables.
+// This behaviour can be adjusted through struct tags.
+// The "env" struct tag will set the name of the environment variable this function looks for.
+// If it isn't set, then the uppercased name of the field will be used.
+// If the "binding" tag is set to "required", then an error will be thrown if the environment variable is unset.
+// Otherwise, a default value will be used.
+// The default value can be set by using the "default" tag.
 func Parse[T any](scopes ...string) (*T, error) {
 	ptr := new(T)
 	ptr_t := reflect.TypeOf(ptr)
