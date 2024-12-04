@@ -10,6 +10,7 @@ import (
 // Parse takes in a struct and attempts to fill it using environment variables.
 // This behaviour can be adjusted through struct tags.
 // The "env" struct tag will set the name of the environment variable this function looks for.
+// If strings are passed as arguments to Parse, then they will be joined with "_" and the resulting string, with a trailing "_", will be used as a prefix for the capitalized field name or the value of the "env" tag.
 // If it isn't set, then the uppercased name of the field will be used.
 // If the "binding" tag is set to "required", then an error will be thrown if the environment variable is unset.
 // Otherwise, a default value will be used.
