@@ -16,6 +16,11 @@ type structUnsupportedType struct {
 	UnsupportedField any
 }
 
+type structTestSkip struct {
+	Working          string `env:"TEST_STRING_WOKRING" default:"working"`
+	UnsupportedField any    `env:"-"`
+}
+
 type structString struct {
 	StringField         string `env:"TEST_STRING" binding:"required"`
 	OptionalStringField string `env:"OPTIONAL_TEST_STRING" default:"test_default_value"`
@@ -432,5 +437,19 @@ func TestName(t *testing.T) {
 				t.Errorf("wanted '%s', got '%s'", c.Want, res)
 			}
 		})
+	}
+}
+
+func TestParseSkip(t *testing.T) {
+	// test that skipping a field work
+	// if this works, then the struct should parse fine
+	// otherwise, there should be an error
+	res, err := Parse[structTestSkip]()
+	if err != nil {
+		t.Errorf("expected no error, got: %s", err.Error())
+	}
+
+	if res == nil {
+		t.Errorf("expected result, got nil")
 	}
 }
