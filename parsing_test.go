@@ -409,3 +409,28 @@ func TestParseBool(t *testing.T) {
 		t.Errorf("expected nil, got %#v", *res)
 	}
 }
+
+func TestName(t *testing.T) {
+	cases := []struct {
+		CaseName string
+		Name     string
+		Scopes   []string
+		Want     string
+	}{
+		{"NameExtrasNil", "TEST", nil, "TEST"},
+		{"NameExtrasEmpty", "TEST", []string{}, "TEST"},
+		{"NameOneExtra", "TEST", []string{"SCOPE1"}, "SCOPE1_TEST"},
+		{"NameThreeExtras", "TEST", []string{"ONE", "TWO", "THREE"}, "ONE_TWO_THREE_TEST"},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.CaseName, func(t *testing.T) {
+			t.Parallel()
+			res := name(c.Name, c.Scopes...)
+			if res != c.Want {
+				t.Errorf("wanted '%s', got '%s'", c.Want, res)
+			}
+		})
+	}
+}
