@@ -3,7 +3,7 @@ package pbool
 import (
 	"strings"
 
-	"github.com/melsincostan/envconfig/parsing/pstring"
+	"github.com/melsincostan/envconfig/parsers/pstring"
 )
 
 var TRUTHY_VALUES = map[string]bool{ // bool value doesn't get used

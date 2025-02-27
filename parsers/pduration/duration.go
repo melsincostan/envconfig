@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/melsincostan/envconfig/parsing/pstring"
+	"github.com/melsincostan/envconfig/parsers/pstring"
 )
 
 const DURATION_DEFAULT = 0 * time.Second

@@ -6,12 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/melsincostan/envconfig/parsing/pbool"
-	"github.com/melsincostan/envconfig/parsing/pduration"
-	"github.com/melsincostan/envconfig/parsing/pfloat"
-	"github.com/melsincostan/envconfig/parsing/pint"
-	"github.com/melsincostan/envconfig/parsing/pstring"
-	"github.com/melsincostan/envconfig/parsing/puint"
+	"github.com/melsincostan/envconfig/parsers/pbool"
+	"github.com/melsincostan/envconfig/parsers/pduration"
+	"github.com/melsincostan/envconfig/parsers/pfloat"
+	"github.com/melsincostan/envconfig/parsers/pint"
+	"github.com/melsincostan/envconfig/parsers/pstring"
+	"github.com/melsincostan/envconfig/parsers/puint"
 )
 
 // Parse creates a struct of type T and attempts to fill it using environment variables.

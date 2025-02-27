@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/melsincostan/envconfig/parsing/pstring"
+	"github.com/melsincostan/envconfig/parsers/pstring"
 )
 
 const INT_DEFAULT = int64(0)
