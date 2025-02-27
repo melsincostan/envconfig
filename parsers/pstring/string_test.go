@@ -77,6 +77,8 @@ func TestParseWithDefault(t *testing.T) {
 		{"EnvBAD_ValOK_optional", invalid_env_name, valid_value, false, "", false, "", false},
 		{"EnvBAD_ValOK_optional_DefOK", invalid_env_name, valid_value, false, "default", false, "default", true},
 		{"EnvBAD_ValOK_optional_DefEMPTY", invalid_env_name, valid_value, false, "", false, "", true},
+		{"EnvOK_ValOK_required", valid_env_name, valid_value, true, valid_value, false, "", false},
+		{"EnvOK_ValOK_optional", valid_env_name, valid_value, false, valid_value, false, "default", true},
 	}
 
 	for _, c := range cases {
