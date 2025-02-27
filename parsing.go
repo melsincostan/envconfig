@@ -22,6 +22,11 @@ import (
 // If the "binding" tag is set to "required", then an error will be thrown if the environment variable is unset.
 // Otherwise, a default value will be used.
 // The default value can be set by using the "default" tag.
+// Embedded structs are allowed.
+// There is a limit to recursion. Currently this is hard-coded to 10.
+// Embedded structs should have a prefix set using the 'prefix' struct tag, otherwise an error will be returned.
+// This prefix acts in a similar way to scopes.
+// It is added all the way at the front, then any scopes from the parent call.
 func Parse[T any](scopes ...string) (*T, error) {
 	ptr := new(T)
 	ptr_t := reflect.TypeOf(ptr)
@@ -34,6 +39,7 @@ func Parse[T any](scopes ...string) (*T, error) {
 	return ptr, nil
 }
 
+// name returns the full name that will be looked for based on the name provided and prefixes.
 func name(name string, parts ...string) string {
 	if len(parts) > 0 {
 		return fmt.Sprintf("%s_%s", strings.Join(parts, "_"), name)
@@ -41,6 +47,8 @@ func name(name string, parts ...string) string {
 	return name
 }
 
+// parseStruct does the actual parsing.
+// it is split out so embedded structs can be parsed recursively easily.
 func parseStruct(t reflect.Type, v reflect.Value, maxDepth uint, scopes ...string) (err error) {
 
 	if v.Kind() != reflect.Struct {
