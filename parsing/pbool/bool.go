@@ -1,6 +1,10 @@
-package envconfig
+package pbool
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/melsincostan/envconfig/parsing/pstring"
+)
 
 var TRUTHY_VALUES = map[string]bool{ // bool value doesn't get used
 	"true": true,
@@ -11,13 +15,13 @@ var TRUTHY_VALUES = map[string]bool{ // bool value doesn't get used
 
 const BOOL_DEFAULT = "false"
 
-func getBool(env_name string, required bool, def_val string, has_default bool) (bool, error) {
+func Parse(env_name string, required bool, def_val string, has_default bool) (bool, error) {
 	def := truthy(BOOL_DEFAULT)
 	if !required && has_default {
 		def = truthy(def_val)
 	}
 
-	raw, err := getString(env_name, true)
+	raw, err := pstring.Parse(env_name, true)
 
 	if err != nil {
 		if required {

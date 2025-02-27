@@ -1,4 +1,4 @@
-package envconfig
+package pbool
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ func TestTruthy(t *testing.T) {
 	}
 }
 
-func TestGetBool(t *testing.T) {
+func TestParse(t *testing.T) {
 	cases := []struct {
 		Name        string
 		EnvName     string
@@ -64,7 +64,7 @@ func TestGetBool(t *testing.T) {
 			os.Setenv(c.EnvName, c.EnvVal)
 			defer os.Unsetenv(c.EnvName)
 
-			res, err := getBool(valid_env_name, c.Required, c.Default, c.HasDefault)
+			res, err := Parse(valid_env_name, c.Required, c.Default, c.HasDefault)
 			if err != nil && !c.ExpectError {
 				t.Errorf("expected no error, got %s", err.Error())
 			} else if err == nil && c.ExpectError {

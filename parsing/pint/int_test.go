@@ -1,4 +1,4 @@
-package envconfig
+package pint
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestGetInt(t *testing.T) {
+func TestParse(t *testing.T) {
 	valid_env_name := "TEST_INT_ENV_NAME"
 	invalid_env_name := fmt.Sprintf("%s_INVALID", valid_env_name)
 
@@ -57,7 +57,7 @@ func TestGetInt(t *testing.T) {
 			os.Setenv(c.EnvName, c.EnvVal)
 			defer os.Unsetenv(c.EnvName) // ensure to clean up after ourselves :3
 
-			res, err := getInt(valid_env_name, c.Required, c.Default, c.HasDefault)
+			res, err := Parse(valid_env_name, c.Required, c.Default, c.HasDefault)
 			if err != nil && !c.ExpectError {
 				t.Errorf("expected no error, got '%s'", err.Error())
 			} else if err == nil && c.ExpectError {

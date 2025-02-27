@@ -1,4 +1,4 @@
-package envconfig
+package pstring
 
 import (
 	"fmt"
@@ -8,12 +8,12 @@ import (
 
 const STRING_DEFAULT = ""
 
-func getStringDef(env_name string, required bool, def_val string, has_default bool) (string, error) {
+func ParseWithDefault(env_name string, required bool, def_val string, has_default bool) (string, error) {
 	def := STRING_DEFAULT
 	if has_default {
 		def = def_val
 	}
-	res, err := getString(env_name, true)
+	res, err := Parse(env_name, true)
 	if err != nil {
 		if required {
 			return STRING_DEFAULT, err
@@ -24,7 +24,7 @@ func getStringDef(env_name string, required bool, def_val string, has_default bo
 	return res, nil
 }
 
-func getString(env_name string, required bool) (string, error) {
+func Parse(env_name string, required bool) (string, error) {
 	raw := os.Getenv(env_name)
 	val := strings.TrimSpace(raw)
 	if required && len(val) < 1 {

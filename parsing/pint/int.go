@@ -1,13 +1,15 @@
-package envconfig
+package pint
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/melsincostan/envconfig/parsing/pstring"
 )
 
 const INT_DEFAULT = int64(0)
 
-func getInt(env_name string, required bool, def_val string, has_default bool) (int64, error) {
+func Parse(env_name string, required bool, def_val string, has_default bool) (int64, error) {
 	def := INT_DEFAULT
 	if !required && has_default {
 		err := error(nil)
@@ -17,7 +19,7 @@ func getInt(env_name string, required bool, def_val string, has_default bool) (i
 		}
 	}
 
-	raw, err := getString(env_name, true)
+	raw, err := pstring.Parse(env_name, true)
 	if err != nil {
 		if required {
 			return INT_DEFAULT, err

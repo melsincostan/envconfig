@@ -1,13 +1,15 @@
-package envconfig
+package puint
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/melsincostan/envconfig/parsing/pstring"
 )
 
 const UINT_DEFAULT = uint64(0)
 
-func getUint(env_name string, required bool, def_val string, has_default bool) (uint64, error) {
+func Parse(env_name string, required bool, def_val string, has_default bool) (uint64, error) {
 	def := UINT_DEFAULT
 	if !required && has_default {
 		err := error(nil)
@@ -17,7 +19,7 @@ func getUint(env_name string, required bool, def_val string, has_default bool) (
 		}
 	}
 
-	raw, err := getString(env_name, true)
+	raw, err := pstring.Parse(env_name, true)
 	if err != nil {
 		if required {
 			return UINT_DEFAULT, err

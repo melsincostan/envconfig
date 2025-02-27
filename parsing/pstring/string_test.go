@@ -1,4 +1,4 @@
-package envconfig
+package pstring
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestGetString(t *testing.T) {
+func TestParse(t *testing.T) {
 	valid_env_name := "TEST_STRING_ENV_NAME"
 	invalid_env_name := fmt.Sprintf("%s_INVALID", valid_env_name)
 
@@ -42,7 +42,7 @@ func TestGetString(t *testing.T) {
 			os.Setenv(c.EnvName, c.EnvVal)
 			defer os.Unsetenv(c.EnvName) // ensure to clean up after ourselves :3
 
-			res, err := getString(valid_env_name, c.Required)
+			res, err := Parse(valid_env_name, c.Required)
 			if err != nil && !c.ExpectError {
 				t.Errorf("expected no error, got '%s'", err.Error())
 			} else if err == nil && c.ExpectError {
@@ -57,7 +57,7 @@ func TestGetString(t *testing.T) {
 	}
 }
 
-func TestGetStringDef(t *testing.T) {
+func TestParseWithDefault(t *testing.T) {
 	valid_env_name := "TEST_STRING_ENV_NAME"
 	invalid_env_name := fmt.Sprintf("%s_INVALID", valid_env_name)
 
@@ -85,7 +85,7 @@ func TestGetStringDef(t *testing.T) {
 			os.Setenv(c.EnvName, c.EnvVal)
 			defer os.Unsetenv(c.EnvName) // ensure to clean up after ourselves :3
 
-			res, err := getStringDef(valid_env_name, c.Required, c.Default, c.HasDefault)
+			res, err := ParseWithDefault(valid_env_name, c.Required, c.Default, c.HasDefault)
 			if err != nil && !c.ExpectError {
 				t.Errorf("expected no error, got '%s'", err.Error())
 			} else if err == nil && c.ExpectError {
