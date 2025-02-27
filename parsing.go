@@ -83,6 +83,8 @@ func parseStruct(t reflect.Type, v reflect.Value, maxDepth uint, scopes ...strin
 			if err := parseStruct(f_t.Type, f_v, maxDepth-1, subscopes...); err != nil {
 				return fmt.Errorf("struct field %s: %s", f_t.Name, err.Error())
 			}
+
+			continue
 		}
 
 		if !f_v.CanSet() {
