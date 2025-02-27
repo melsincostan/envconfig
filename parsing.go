@@ -66,6 +66,25 @@ func parseStruct(t reflect.Type, v reflect.Value, maxDepth uint, scopes ...strin
 
 		required := strings.ToLower(f_t.Tag.Get("binding")) == "required"
 
+		if f_v.Kind() == reflect.Struct {
+			if maxDepth < 1 {
+				return fmt.Errorf("field %s: max recursion depth exceeded", f_t.Name)
+			}
+
+			prefix, ok := f_t.Tag.Lookup("prefix")
+
+			if !ok {
+				return fmt.Errorf("field %s: embedded structs should have a 'prefix' key", f_t.Name)
+			}
+
+			subscopes := []string{prefix}
+			subscopes = append(subscopes, scopes...)
+
+			if err := parseStruct(f_t.Type, f_v, maxDepth-1, subscopes...); err != nil {
+				return fmt.Errorf("struct field %s: %s", f_t.Name, err.Error())
+			}
+		}
+
 		if !f_v.CanSet() {
 			return fmt.Errorf("field %s: not assignable", f_t.Name)
 		}
