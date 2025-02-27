@@ -5,6 +5,13 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/melsincostan/envconfig/parsers/pbool"
+	"github.com/melsincostan/envconfig/parsers/pduration"
+	"github.com/melsincostan/envconfig/parsers/pfloat"
+	"github.com/melsincostan/envconfig/parsers/pint"
+	"github.com/melsincostan/envconfig/parsers/pstring"
+	"github.com/melsincostan/envconfig/parsers/puint"
 )
 
 // Parse creates a struct of type T and attempts to fill it using environment variables.
@@ -51,37 +58,37 @@ func Parse[T any](scopes ...string) (*T, error) {
 
 		switch f_v.Interface().(type) {
 		case string:
-			res, err := getStringDef(env_name, required, def_val, has_default)
+			res, err := pstring.ParseWithDefault(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetString(res)
 		case int, int8, int16, int32, int64:
-			res, err := getInt(env_name, required, def_val, has_default)
+			res, err := pint.Parse(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetInt(res) // TODO; check if this truncates if assigning a number with higher bitsize to a field with smaller bitsize (for example in16-size number into int8)/
 		case float32, float64:
-			res, err := getFloat(env_name, required, def_val, has_default)
+			res, err := pfloat.Parse(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetFloat(res)
 		case uint, uint8, uint16, uint32, uint64:
-			res, err := getUint(env_name, required, def_val, has_default)
+			res, err := puint.Parse(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetUint(res)
 		case time.Duration:
-			res, err := getDuration(env_name, required, def_val, has_default)
+			res, err := pduration.Parse(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.Set(reflect.ValueOf(res))
 		case bool:
-			res, err := getBool(env_name, required, def_val, has_default)
+			res, err := pbool.Parse(env_name, required, def_val, has_default)
 			if err != nil {
 				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}

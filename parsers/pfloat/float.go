@@ -1,13 +1,15 @@
-package envconfig
+package pfloat
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/melsincostan/envconfig/parsers/pstring"
 )
 
 const FLOAT_DEFAULT = float64(0)
 
-func getFloat(env_name string, required bool, def_val string, has_default bool) (float64, error) {
+func Parse(env_name string, required bool, def_val string, has_default bool) (float64, error) {
 	def := FLOAT_DEFAULT
 	if !required && has_default {
 		err := error(nil)
@@ -16,7 +18,7 @@ func getFloat(env_name string, required bool, def_val string, has_default bool) 
 			return FLOAT_DEFAULT, fmt.Errorf("invalid default value: %s", err.Error())
 		}
 	}
-	raw, err := getString(env_name, true)
+	raw, err := pstring.Parse(env_name, true)
 	if err != nil {
 		if required {
 			return FLOAT_DEFAULT, err

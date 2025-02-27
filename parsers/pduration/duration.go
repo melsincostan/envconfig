@@ -1,13 +1,15 @@
-package envconfig
+package pduration
 
 import (
 	"fmt"
 	"time"
+
+	"github.com/melsincostan/envconfig/parsers/pstring"
 )
 
 const DURATION_DEFAULT = 0 * time.Second
 
-func getDuration(env_name string, required bool, def_val string, has_default bool) (time.Duration, error) {
+func Parse(env_name string, required bool, def_val string, has_default bool) (time.Duration, error) {
 	def := DURATION_DEFAULT
 	if !required && has_default {
 		err := error(nil)
@@ -17,7 +19,7 @@ func getDuration(env_name string, required bool, def_val string, has_default boo
 		}
 	}
 
-	raw, err := getString(env_name, true)
+	raw, err := pstring.Parse(env_name, true)
 	if err != nil {
 		if required {
 			return DURATION_DEFAULT, err
