@@ -131,6 +131,10 @@ type StructTooDeepP struct {
 	Embedded string `env:"CATCH_ME_IF_YOU_CAN" default:"deep"`
 }
 
+type StructEmbeddedNoPrefix struct {
+	Embedded structEmbeddedInside
+}
+
 func TestParseNotStruct(t *testing.T) {
 	res, err := Parse[int]()
 	if err == nil {
@@ -582,6 +586,17 @@ func TestParseEmbedded(t *testing.T) {
 
 func TestParseEmbeddedInfiniteRecursion(t *testing.T) {
 	res, err := Parse[StructTooDeepA]()
+	if err == nil {
+		t.Error("expected error, got none")
+	}
+
+	if res != nil {
+		t.Error("expected no result, got one")
+	}
+}
+
+func TestParseEmbeddedNoPrefix(t *testing.T) {
+	res, err := Parse[StructEmbeddedNoPrefix]()
 	if err == nil {
 		t.Error("expected error, got none")
 	}
