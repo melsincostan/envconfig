@@ -59,6 +59,82 @@ type structBool struct {
 	OptionalBoolField bool `env:"OPTIONAL_TEST_BOOL" default:"true"`
 }
 
+type structEmbeddedOutside struct {
+	Embedded structEmbeddedInside `prefix:"INNER"`
+}
+
+type structEmbeddedInside struct {
+	StringField string `env:"TEST_STRING" default:"default"`
+}
+
+type StructTooDeepA struct {
+	Embedded StructTooDeepB `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepB struct {
+	Embedded StructTooDeepC `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepC struct {
+	Embedded StructTooDeepD `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepD struct {
+	Embedded StructTooDeepE `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepE struct {
+	Embedded StructTooDeepF `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepF struct {
+	Embedded StructTooDeepG `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepG struct {
+	Embedded StructTooDeepH `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepH struct {
+	Embedded StructTooDeepI `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepI struct {
+	Embedded StructTooDeepJ `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepJ struct {
+	Embedded StructTooDeepK `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepK struct {
+	Embedded StructTooDeepL `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepL struct {
+	Embedded StructTooDeepM `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepM struct {
+	Embedded StructTooDeepN `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepN struct {
+	Embedded StructTooDeepO `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepO struct {
+	Embedded StructTooDeepP `prefix:"EMBEDDED"`
+}
+
+type StructTooDeepP struct {
+	Embedded string `env:"CATCH_ME_IF_YOU_CAN" default:"deep"`
+}
+
+type StructEmbeddedNoPrefix struct {
+	Embedded structEmbeddedInside
+}
+
 func TestParseNotStruct(t *testing.T) {
 	res, err := Parse[int]()
 	if err == nil {
@@ -494,5 +570,38 @@ func TestParseScoped(t *testing.T) {
 			}
 			os.Unsetenv(c.Envar)
 		})
+	}
+}
+
+func TestParseEmbedded(t *testing.T) {
+	res, err := Parse[structEmbeddedOutside]()
+	if err != nil {
+		t.Fatalf("error: %s", err)
+	}
+
+	if res.Embedded.StringField != "default" {
+		t.Errorf("expected 'default', got '%s'", res.Embedded.StringField)
+	}
+}
+
+func TestParseEmbeddedInfiniteRecursion(t *testing.T) {
+	res, err := Parse[StructTooDeepA]()
+	if err == nil {
+		t.Error("expected error, got none")
+	}
+
+	if res != nil {
+		t.Error("expected no result, got one")
+	}
+}
+
+func TestParseEmbeddedNoPrefix(t *testing.T) {
+	res, err := Parse[StructEmbeddedNoPrefix]()
+	if err == nil {
+		t.Error("expected error, got none")
+	}
+
+	if res != nil {
+		t.Error("expected no result, got one")
 	}
 }
