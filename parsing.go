@@ -26,16 +26,30 @@ func Parse[T any](scopes ...string) (*T, error) {
 	ptr := new(T)
 	ptr_t := reflect.TypeOf(ptr)
 	ptr_v := reflect.ValueOf(ptr)
-	obj_t := ptr_t.Elem()
-	obj_v := ptr_v.Elem()
 
-	if obj_v.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("expected struct, got %s", obj_v.Kind())
+	if err := parseStruct(ptr_t.Elem(), ptr_v.Elem(), 10, scopes...); err != nil {
+		return nil, err
 	}
 
-	for i := 0; i < obj_v.NumField(); i++ {
-		f_t := obj_t.Field(i)
-		f_v := obj_v.Field(i)
+	return ptr, nil
+}
+
+func name(name string, parts ...string) string {
+	if len(parts) > 0 {
+		return fmt.Sprintf("%s_%s", strings.Join(parts, "_"), name)
+	}
+	return name
+}
+
+func parseStruct(t reflect.Type, v reflect.Value, maxDepth uint, scopes ...string) (err error) {
+
+	if v.Kind() != reflect.Struct {
+		return fmt.Errorf("expected struct, got %s", v.Kind())
+	}
+
+	for i := range v.NumField() {
+		f_t := t.Field(i)
+		f_v := v.Field(i)
 
 		raw_env_name, has_env_tag := f_t.Tag.Lookup("env")
 		env_name := name(raw_env_name, scopes...)
@@ -53,56 +67,50 @@ func Parse[T any](scopes ...string) (*T, error) {
 		required := strings.ToLower(f_t.Tag.Get("binding")) == "required"
 
 		if !f_v.CanSet() {
-			return nil, fmt.Errorf("field %s: not assignable", f_t.Name)
+			return fmt.Errorf("field %s: not assignable", f_t.Name)
 		}
 
 		switch f_v.Interface().(type) {
 		case string:
 			res, err := pstring.ParseWithDefault(env_name, required, def_val, has_default)
 			if err != nil {
-				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+				return fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetString(res)
 		case int, int8, int16, int32, int64:
 			res, err := pint.Parse(env_name, required, def_val, has_default)
 			if err != nil {
-				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+				return fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetInt(res) // TODO; check if this truncates if assigning a number with higher bitsize to a field with smaller bitsize (for example in16-size number into int8)/
 		case float32, float64:
 			res, err := pfloat.Parse(env_name, required, def_val, has_default)
 			if err != nil {
-				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+				return fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetFloat(res)
 		case uint, uint8, uint16, uint32, uint64:
 			res, err := puint.Parse(env_name, required, def_val, has_default)
 			if err != nil {
-				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+				return fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetUint(res)
 		case time.Duration:
 			res, err := pduration.Parse(env_name, required, def_val, has_default)
 			if err != nil {
-				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+				return fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.Set(reflect.ValueOf(res))
 		case bool:
 			res, err := pbool.Parse(env_name, required, def_val, has_default)
 			if err != nil {
-				return nil, fmt.Errorf("field %s: %s", f_t.Name, err.Error())
+				return fmt.Errorf("field %s: %s", f_t.Name, err.Error())
 			}
 			f_v.SetBool(res)
 		default:
-			return nil, fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
+			return fmt.Errorf("field %s: unsupported type %s", f_t.Name, f_v.Kind())
 		}
 	}
-	return ptr, nil
-}
 
-func name(name string, parts ...string) string {
-	if len(parts) > 0 {
-		return fmt.Sprintf("%s_%s", strings.Join(parts, "_"), name)
-	}
-	return name
+	return nil
 }
