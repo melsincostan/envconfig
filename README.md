@@ -26,3 +26,4 @@ Currently supported types for fields are:
 - `float32`, `float64`
 - `time.Duration`
 - `bool`
+- a further configuration `struct`, with a recursion limit of `10` embedded structs.
